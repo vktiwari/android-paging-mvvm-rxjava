@@ -25,8 +25,8 @@ import com.vktiwari.pagingretrofitrxjava.ui.peoplelist.adapter.RetryCallback;
 public class PeopleListActivity extends AppCompatActivity implements RetryCallback, OnItemClickListener {
 
     private PeopleListViewModel peopleViewModel;
-    private RecyclerView mRecyclerView;
-    private LinearLayoutManager mLayoutManager;
+    private RecyclerView recyclerView;
+    private LinearLayoutManager layoutManager;
 
     private TextView textErrorMsg;
     private Button btnRetry;
@@ -44,19 +44,19 @@ public class PeopleListActivity extends AppCompatActivity implements RetryCallba
     public void init() {
         peopleViewModel = ViewModelProviders.of(this).get(PeopleListViewModel.class);
 
-        mRecyclerView = findViewById(R.id.my_recycler_view);
+        recyclerView = findViewById(R.id.my_recycler_view);
         loadingProgress = findViewById(R.id.loadingProgress);
         textErrorMsg = findViewById(R.id.textErrorMsg);
         btnRetry = findViewById(R.id.buttonRetry);
         swipeRefreshLayout = findViewById(R.id.swipeToRefresh);
 
-        mRecyclerView.setHasFixedSize(true);
+        recyclerView.setHasFixedSize(true);
 
-        mLayoutManager = new LinearLayoutManager(this);
-        mRecyclerView.setLayoutManager(mLayoutManager);
+        layoutManager = new LinearLayoutManager(this);
+        recyclerView.setLayoutManager(layoutManager);
 
         peopleListAdapter = new PeopleListAdapter(this, this);
-        mRecyclerView.setAdapter(peopleListAdapter);
+        recyclerView.setAdapter(peopleListAdapter);
         peopleViewModel.getPeopleLiveData().observe(this, peopleListAdapter::submitList);
         peopleViewModel.getNetworkState().observe(this, peopleListAdapter::setNetworkState);
         peopleViewModel.getInitialLoading().observe(this, networkState -> {

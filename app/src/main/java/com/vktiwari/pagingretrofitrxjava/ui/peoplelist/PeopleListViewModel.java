@@ -63,10 +63,10 @@ public class PeopleListViewModel extends ViewModel {
 
 
     public void retryPagination() {
-        sourceFactory.getMutableLiveData().getValue().retryPagination();
+        sourceFactory.getPeopleDataSource().retryPagination();
     }
 
     public void refresh() {
-        sourceFactory.getMutableLiveData().getValue().invalidate();
+        sourceFactory.getPeopleDataSource().invalidate();
     }
 }
