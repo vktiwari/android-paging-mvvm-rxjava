@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">PagingRetrofitRxJava</string>
+    <string name="default_error_msg">Something went wrong, please try again</string>
+    <string name="network_connect_error">Please check your internet connection and try again !</string>
+</resources>

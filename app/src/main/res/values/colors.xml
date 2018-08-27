@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#008577</color>
+    <color name="colorPrimaryDark">#00574B</color>
+    <color name="colorAccent">#FFFFFF</color>
+
+    <!--Star war theme-->
+    <color name="background">#222222</color>
+    <color name="list_item_text">#FFFFFF</color>
+    <color name="label_text">#DDBB00</color>
+    <color name="data_value_text">#FFFFFF</color>
+</resources>
