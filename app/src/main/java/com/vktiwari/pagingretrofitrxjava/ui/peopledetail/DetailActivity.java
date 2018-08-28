@@ -3,6 +3,7 @@ package com.vktiwari.pagingretrofitrxjava.ui.peopledetail;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
 import android.widget.TextView;
 
 import com.vktiwari.pagingretrofitrxjava.R;
@@ -27,8 +28,8 @@ public class DetailActivity extends AppCompatActivity {
 
         assert people != null;
         textName.setText(people.name);
-        textHeight.setText(people.height);
-        textMass.setText(people.mass);
+        textHeight.setText(TextUtils.isEmpty(people.height) ? "" : people.height + " metres");
+        textMass.setText(TextUtils.isEmpty(people.mass) ? "" : people.mass + " kg");
         textCreatedDate.setText(people.created);
     }
 }
