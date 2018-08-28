@@ -8,6 +8,7 @@ import android.widget.TextView;
 
 import com.vktiwari.pagingretrofitrxjava.R;
 import com.vktiwari.pagingretrofitrxjava.model.People;
+import com.vktiwari.pagingretrofitrxjava.utils.Utils;
 
 public class DetailActivity extends AppCompatActivity {
 
@@ -28,7 +29,7 @@ public class DetailActivity extends AppCompatActivity {
 
         assert people != null;
         textName.setText(people.name);
-        textHeight.setText(TextUtils.isEmpty(people.height) ? "" : people.height + " metres");
+        textHeight.setText(TextUtils.isEmpty(people.height) ? "" : Utils.convertCentimetreToMeter(Float.parseFloat(people.height)) + " metres");
         textMass.setText(TextUtils.isEmpty(people.mass) ? "" : people.mass + " kg");
         textCreatedDate.setText(people.created);
     }
