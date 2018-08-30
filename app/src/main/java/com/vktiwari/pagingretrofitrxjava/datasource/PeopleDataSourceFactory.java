@@ -5,25 +5,21 @@ import android.arch.paging.DataSource;
 
 import com.vktiwari.pagingretrofitrxjava.model.People;
 
-public class PeopleDataSourceFactory extends DataSource.Factory<Integer,People> {
+public class PeopleDataSourceFactory extends DataSource.Factory<Integer, People> {
     private MutableLiveData<PeopleDataSource> mutableLiveData;
-    private PeopleDataSource peopleDataSource;
 
-    public PeopleDataSourceFactory(){
-        mutableLiveData = new MutableLiveData<PeopleDataSource>();
-        peopleDataSource = new PeopleDataSource();
+    public PeopleDataSourceFactory() {
+        mutableLiveData = new MutableLiveData<>();
     }
+
     @Override
-    public DataSource<Integer,People> create() {
+    public DataSource<Integer, People> create() {
+        PeopleDataSource peopleDataSource = new PeopleDataSource();
         mutableLiveData.postValue(peopleDataSource);
         return peopleDataSource;
     }
 
     public MutableLiveData<PeopleDataSource> getMutableLiveData() {
         return mutableLiveData;
-    }
-
-    public PeopleDataSource getPeopleDataSource() {
-        return peopleDataSource;
     }
 }

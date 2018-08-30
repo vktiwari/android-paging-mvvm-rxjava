@@ -14,6 +14,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.vktiwari.pagingretrofitrxjava.R;
+import com.vktiwari.pagingretrofitrxjava.datasource.PeopleDataSourceFactory;
 import com.vktiwari.pagingretrofitrxjava.model.People;
 import com.vktiwari.pagingretrofitrxjava.network.NetworkState;
 import com.vktiwari.pagingretrofitrxjava.ui.peopledetail.DetailActivity;
@@ -42,7 +43,7 @@ public class PeopleListActivity extends AppCompatActivity implements RetryCallba
     }
 
     public void init() {
-        peopleViewModel = ViewModelProviders.of(this).get(PeopleListViewModel.class);
+        peopleViewModel = ViewModelProviders.of(this, new MyViewModelFactory(new PeopleDataSourceFactory())).get(PeopleListViewModel.class);
 
         recyclerView = findViewById(R.id.my_recycler_view);
         loadingProgress = findViewById(R.id.loadingProgress);

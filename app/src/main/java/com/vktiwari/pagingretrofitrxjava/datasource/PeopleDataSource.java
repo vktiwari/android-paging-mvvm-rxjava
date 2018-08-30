@@ -24,14 +24,16 @@ import static android.content.ContentValues.TAG;
 
 public class PeopleDataSource extends ItemKeyedDataSource<Integer, People> {
 
-    private MutableLiveData<NetworkState> networkState = new MutableLiveData<>();
-    private MutableLiveData<NetworkState> initialLoading = new MutableLiveData<>();
+    private final MutableLiveData<NetworkState> networkState;
+    private final MutableLiveData<NetworkState> initialLoading;
+    private final CompositeDisposable compositeDisposable;
     private Completable retryCompletable;
-    private CompositeDisposable compositeDisposable;
     private int pageNumber = 1;
 
     public PeopleDataSource() {
         this.compositeDisposable = new CompositeDisposable();
+        this.networkState = new MutableLiveData<>();
+        this.initialLoading = new MutableLiveData<>();
     }
 
     public MutableLiveData<NetworkState> getNetworkState() {
@@ -49,11 +51,12 @@ public class PeopleDataSource extends ItemKeyedDataSource<Integer, People> {
 
     @Override
     public void loadInitial(@NonNull LoadInitialParams<Integer> params, @NonNull LoadInitialCallback<People> callback) {
+        Log.d("loadInitial","params key="+params.requestedInitialKey+" loadSize="+params.requestedLoadSize);
         initialLoading.postValue(NetworkState.LOADING);
         networkState.postValue(NetworkState.LOADING);
         setRetry(() -> loadInitial(params, callback));
 
-        Disposable peopleListDisposable = NetworkService.getInstance().getRetrofitService(StarWarAPI.class).getPeopleList(1)
+        Disposable peopleListDisposable = NetworkService.getInstance().getRetrofitService(StarWarAPI.class).getPeopleList(pageNumber)
                 .timeout(30, TimeUnit.SECONDS)
                 .subscribe(starWarResponse -> {
                     if (starWarResponse == null || starWarResponse.results == null) {
@@ -73,12 +76,12 @@ public class PeopleDataSource extends ItemKeyedDataSource<Integer, People> {
 
     @Override
     public void loadAfter(@NonNull LoadParams<Integer> params, @NonNull LoadCallback<People> callback) {
-        Log.i(TAG, "Loading Rang " + params.key + " Count " + params.requestedLoadSize);
+        Log.i("loadAfter", "Loading Rang " + params.key + " Count " + params.requestedLoadSize);
 
         networkState.postValue(NetworkState.LOADING);
         setRetry(() -> loadAfter(params, callback));
 
-        Disposable peopleListDisposable = NetworkService.getInstance().getRetrofitService(StarWarAPI.class).getPeopleList(params.key)
+        Disposable peopleListDisposable = NetworkService.getInstance().getRetrofitService(StarWarAPI.class).getPeopleList(pageNumber)
                 .timeout(30, TimeUnit.SECONDS)
                 .subscribe(starWarResponse -> {
                     if (starWarResponse == null || starWarResponse.results == null) {
@@ -96,6 +99,7 @@ public class PeopleDataSource extends ItemKeyedDataSource<Integer, People> {
         initialLoading.postValue(error);
         networkState.postValue(error);
     }
+
     private void onError(Throwable throwable) {
         NetworkState error = NetworkState.error(throwable.getMessage());
         networkState.postValue(error);
@@ -103,14 +107,12 @@ public class PeopleDataSource extends ItemKeyedDataSource<Integer, People> {
 
     private void onResponseFetched(StarWarResponse<People> response, LoadCallback<People> callback) {
         Log.d(TAG, "onResponse fetched=" + response);
-        networkState.postValue(NetworkState.LOADED);
         setRetry(null);
-        Integer nextPage = null;
         if (response.hasMore()) {
-            nextPage = Integer.parseInt(response.next.split("page=")[1]);
-            pageNumber = nextPage;
+            pageNumber = Integer.parseInt(response.next.split("page=")[1]);
         }
         callback.onResult(response.results);
+        networkState.postValue(NetworkState.LOADED);
     }
 
     public void retryPagination() {

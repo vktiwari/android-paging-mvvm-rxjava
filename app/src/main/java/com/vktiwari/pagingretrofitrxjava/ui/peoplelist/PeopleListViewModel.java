@@ -3,6 +3,7 @@ package com.vktiwari.pagingretrofitrxjava.ui.peoplelist;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Transformations;
 import android.arch.lifecycle.ViewModel;
+import android.arch.paging.DataSource;
 import android.arch.paging.LivePagedListBuilder;
 import android.arch.paging.PagedList;
 import android.util.Log;
@@ -12,6 +13,7 @@ import com.vktiwari.pagingretrofitrxjava.datasource.PeopleDataSourceFactory;
 import com.vktiwari.pagingretrofitrxjava.model.People;
 import com.vktiwari.pagingretrofitrxjava.network.NetworkState;
 
+import java.util.Objects;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
@@ -19,16 +21,18 @@ public class PeopleListViewModel extends ViewModel {
     private final String TAG = "PeopleListViewModel";
     private Executor executor;
     private LiveData<PagedList<People>> peopleLiveData;
-    private int pageSize = 20;
+    private LiveData<NetworkState> networkStateLiveData;
+    private LiveData<NetworkState> initialLoadingLiveData;
+    private int pageSize = 40;
     private PeopleDataSourceFactory sourceFactory;
 
-    public PeopleListViewModel() {
-        init();
+    public PeopleListViewModel(DataSource.Factory sourceFactory) {
+        this.sourceFactory = (PeopleDataSourceFactory) sourceFactory;
+        setup();
     }
 
-    private void init() {
+    private void setup() {
         executor = Executors.newFixedThreadPool(5);
-        sourceFactory = new PeopleDataSourceFactory();
 
         PagedList.Config config = new PagedList.Config.Builder()
                 .setPageSize(pageSize)
@@ -39,34 +43,36 @@ public class PeopleListViewModel extends ViewModel {
                 .setFetchExecutor(executor)
                 .build();
 
+        networkStateLiveData = Transformations.switchMap(sourceFactory.getMutableLiveData(), PeopleDataSource::getNetworkState);
+        initialLoadingLiveData = Transformations.switchMap(sourceFactory.getMutableLiveData(), PeopleDataSource::getInitialLoading);
+
     }
 
     public LiveData<NetworkState> getNetworkState() {
-        return Transformations.switchMap(sourceFactory.getMutableLiveData(), PeopleDataSource::getNetworkState);
-
+        return networkStateLiveData;
     }
 
     public LiveData<NetworkState> getInitialLoading() {
-        return Transformations.switchMap(sourceFactory.getMutableLiveData(), PeopleDataSource::getInitialLoading);
+        return initialLoadingLiveData;
     }
 
-    LiveData<PagedList<People>> getPeopleLiveData() {
+    public LiveData<PagedList<People>> getPeopleLiveData() {
         return peopleLiveData;
     }
 
     @Override
     protected void onCleared() {
         super.onCleared();
-        sourceFactory.getPeopleDataSource().clear();
         Log.d(TAG, "onCleared");
+        Objects.requireNonNull(sourceFactory.getMutableLiveData().getValue()).clear();
     }
 
 
     public void retryPagination() {
-        sourceFactory.getPeopleDataSource().retryPagination();
+        Objects.requireNonNull(sourceFactory.getMutableLiveData().getValue()).retryPagination();
     }
 
     public void refresh() {
-        sourceFactory.getPeopleDataSource().invalidate();
+        Objects.requireNonNull(sourceFactory.getMutableLiveData().getValue()).invalidate();
     }
 }

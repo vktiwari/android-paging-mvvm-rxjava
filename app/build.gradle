@@ -23,17 +23,21 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+
+    testOptions {
+        unitTests.returnDefaultValues = true
+    }
 }
 
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation 'android.arch.lifecycle:extensions:1.1.1'
+    implementation "android.arch.lifecycle:extensions:$archVersion"
     implementation "android.arch.paging:runtime:1.0.1"
 
 
     implementation "com.android.support:appcompat-v7:$android_support_version"
-    implementation  "com.android.support:recyclerview-v7:$android_support_version"
+    implementation "com.android.support:recyclerview-v7:$android_support_version"
     implementation "com.android.support:cardview-v7:$android_support_version"
     implementation "com.android.support:design:$android_support_version"
 
@@ -41,13 +45,24 @@ dependencies {
     retrofit2()
     okHttp()
     rx()
+    junitTest()
+    androidTest()
+}
 
-    testImplementation 'junit:junit:4.12'
+private void junitTest() {
+    dependencies.testImplementation 'org.mockito:mockito-core:2.11.0'
+    dependencies.testImplementation 'junit:junit:4.12'
+    dependencies.testImplementation("android.arch.core:core-testing:$archVersion", {
+        exclude group: 'com.android.support', module: 'support-compat'
+        exclude group: 'com.android.support', module: 'support-annotations'
+        exclude group: 'com.android.support', module: 'support-core-utils'
+    })
+}
 
-    androidTestImplementation 'com.android.support.test:runner:1.0.2'
-    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
-    testImplementation 'org.mockito:mockito-core:2.2.22'
-
+private void androidTest() {
+    dependencies.androidTestImplementation 'com.android.support.test:runner:1.0.2'
+    dependencies.androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+    //dependencies.androidTestImplementation "org.mockito:mockito-android:2.11.0"
 }
 
 private void okHttp() {

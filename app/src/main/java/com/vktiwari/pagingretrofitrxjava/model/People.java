@@ -60,4 +60,15 @@ public class People implements Parcelable {
         People people = (People) obj;
         return people.id == this.id;
     }
+
+    @Override
+    public String toString() {
+        return "People{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", height='" + height + '\'' +
+                ", mass='" + mass + '\'' +
+                ", created='" + created + '\'' +
+                '}';
+    }
 }
