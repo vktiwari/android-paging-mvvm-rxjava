@@ -1,4 +1,4 @@
-#  Android Paging with Retrofit and RxJava
+#  Android Paging with MVVM and RxJava , retrofit
 
 This is the sample of paging library with retrofit and rxjava.
 
